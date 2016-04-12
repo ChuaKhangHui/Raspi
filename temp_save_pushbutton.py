@@ -10,7 +10,7 @@ import cv2
 
 import numpy as np
 
-
+import random
 
 # Dectection phase
 def detector(video_capture,rot_angle, ROI_1, ROI_2, ppl_width):
@@ -162,20 +162,19 @@ def loadpara(filename):
         print ("use default parameter")
         
         
-
-#parameter
+#default parameter
 rot_angle = 180
-ROI_1 = [71,133]
-ROI_2 = [564,475]
-ppl_width = 123
+ROI_1 = [0,0]
+ROI_2 = [100,100]
+ppl_width = 114
 
 loaded = False
 
 paras = loadpara("para.txt")
 if (loaded == True):
     [rot_angle, ROI_1, ROI_2, ppl_width] = paras
-    
-    
+
+
 #Display - light
 height = 100
 width = 60
@@ -268,7 +267,7 @@ while (True):
         waiton(img,str(hold_max - start_fc))  
         
         #count down end: PUSH, GREEN
-        if (hold_max - start_fc < missing_max - missing_fc):
+        if (hold_max - start_fc < missing_max - missing_fc ):
             detectoff(img)
             holdoff(img)            
             pushon(img,str(crossing_time))
@@ -293,7 +292,7 @@ while (True):
     if (waitkey_time < 1):
         print ("slow")
         waitkey_time = 1
-    print (waitkey_time)
+    #print waitkey_time
     
     key = cv2.waitKey(0)    
 #    if key == ord('z'):
