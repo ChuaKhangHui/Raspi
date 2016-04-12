@@ -10,6 +10,8 @@ import cv2
 
 import numpy as np
 
+
+
 # Dectection phase
 def detector(video_capture,rot_angle, ROI_1, ROI_2, ppl_width):
     
@@ -55,15 +57,15 @@ def detector(video_capture,rot_angle, ROI_1, ROI_2, ppl_width):
     ##delete large rect
     i = 0
     while (i < len(rects)):
-        print "ppp"
-        print float(rects[i][2])
+        print ("ppp")
+        print (float(rects[i][2]))
         if (rects[i][2] > max_ppl_size or rects[i][2] < min_ppl_size):
-            [x,y,w,h] = rects[i]
-            cv2.rectangle(orig, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            #[x,y,w,h] = rects[i]
+            #cv2.rectangle(orig, (x, y), (x + w, y + h), (255, 0, 0), 2)
             rects = np.delete(rects,i,0)
         else:
-            [x,y,w,h] = rects[i]
-            cv2.rectangle(orig, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            #[x,y,w,h] = rects[i]
+            #cv2.rectangle(orig, (x, y), (x + w, y + h), (0, 0, 255), 2)
             i += 1
      
     #Display - origin 
@@ -92,6 +94,11 @@ def detector(video_capture,rot_angle, ROI_1, ROI_2, ppl_width):
     #Display - result
     cv2.imshow("HOG + NMS", image)
     
+#    if(random.random() > 0.8):
+#            print ("save")
+#            fname = "./save/" + time.strftime("%m_%d_%H_%M_%S")+ ".jpg"
+#            cv2.imwrite(fname,image)
+#            
     if people > 0:
         return True
     else:
@@ -141,7 +148,7 @@ def loadpara(filename):
         temp = []
         lines = text_file.readlines()
         for line in lines:
-            print line
+            print (line)
             inner_list = [elt.strip() for elt in line.split(':')]
             # in alternative, if you need to use the file content as numbers
             # inner_list = [int(elt.strip()) for elt in line.split(',')]
@@ -151,30 +158,31 @@ def loadpara(filename):
         return [temp[0][0],temp[1],temp[2],temp[3][0]]
     
     except IOError:
-        print "Could not open file!"
-        print "use default parameter"
+        print ("Could not open file!")
+        print ("use default parameter")
         
         
-#default parameter
+
+#parameter
 rot_angle = 180
-ROI_1 = [0,0]
-ROI_2 = [100,100]
-ppl_width = 114
+ROI_1 = [71,133]
+ROI_2 = [564,475]
+ppl_width = 123
 
 loaded = False
 
 paras = loadpara("para.txt")
 if (loaded == True):
     [rot_angle, ROI_1, ROI_2, ppl_width] = paras
-
-
+    
+    
 #Display - light
 height = 100
 width = 60
 cv2.namedWindow('Light',2)
 
 #Input : video
-video_path = "/home/pi/Desktop/stream/day.avi"
+video_path = "C:/Users/hui/Desktop/FYP/FYP_input_video/day.avi"
 video_capture = cv2.VideoCapture(video_path)
 
 #rain : 1580
@@ -188,7 +196,7 @@ print ("fps : " + str(real_fps))
 #real_fps = 15
 
 #parameter
-fps = 3
+fps = 5
 processingtime_per_frame = round (1.0 / fps, 3)
 frame_skip = int(np.ceil(real_fps / fps) - 1)
 
@@ -260,7 +268,7 @@ while (True):
         waiton(img,str(hold_max - start_fc))  
         
         #count down end: PUSH, GREEN
-        if (start_fc > hold_max ):
+        if (hold_max - start_fc < missing_max - missing_fc):
             detectoff(img)
             holdoff(img)            
             pushon(img,str(crossing_time))
@@ -282,13 +290,12 @@ while (True):
     #if fps = 5, pt = 0.2
     
     waitkey_time = int(round((processingtime_per_frame - total) * 1000))
-    print waitkey_time
     if (waitkey_time < 1):
         print ("slow")
         waitkey_time = 1
-    #print waitkey_time
+    print (waitkey_time)
     
-    key = cv2.waitKey(1)    
+    key = cv2.waitKey(0)    
 #    if key == ord('z'):
 #        detected = ~detected
     if key == ord('q'):
