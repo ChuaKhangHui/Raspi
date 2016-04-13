@@ -1,0 +1,4 @@
+rot_angle :180
+1st point :87,53
+2nd point :508,379
+ppl_size :130
