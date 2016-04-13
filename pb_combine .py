@@ -1,22 +1,16 @@
 import time
-
-import sys
 from imutils.object_detection import non_max_suppression
-from imutils import paths
 import imutils
-
 import argparse
 import cv2
-
 import numpy as np
-
 
 
 # Dectection phase
 def detector(video_capture,rot_angle, ROI_1, ROI_2, ppl_width):
     
-    for i in range (frame_skip):
-        video_capture.read()
+#    for i in range (frame_skip):
+#        video_capture.read()
 
     #read video
     ret, image = video_capture.read()    
@@ -163,6 +157,7 @@ def loadpara(filename):
         
         
 
+
 #parameter
 rot_angle = 180
 ROI_1 = [71,133]
@@ -170,23 +165,59 @@ ROI_2 = [564,475]
 ppl_width = 123
 
 loaded = False
+para_path  = "para.txt"
+save_para_path = "para.txt"
+#start
+pi = False;
+ 
+parser = argparse.ArgumentParser(description='Compare openCV Haar Cascade and HOG+SVM')
+parser.add_argument('-l','--lpara', help='file path for load parameter',required=False)
+parser.add_argument('-v','--video', help='path for video input',required=False)
+parser.add_argument('-s','--skip', help='number of frame to skip',required=False)
+parser.add_argument('-w','--webcam', action="store_true", help='use webcam for image input',required=False)
+parser.add_argument('-r','--raspi', action="store_true", default=None, help='raspi version',required=False)
+args = parser.parse_args()
 
-paras = loadpara("para.txt")
+if (args.raspi != None):
+    pi = True;    
+
+if (args.lpara != None):
+    para_path = args.lpara;
+   
+paras = loadpara(para_path)
 if (loaded == True):
     [rot_angle, ROI_1, ROI_2, ppl_width] = paras
+#read image
+#default
+ 
+#Input : video   
+video_path = 0
+#video_path = "C:/Users/hui/Desktop/FYP/FYP_input_video/day.avi"
+#rain : 1580
+#day : 380 
+   
+if (args.video != None):
+    video_path = args.video
     
+if (args.webcam != None):
+    video_path = 0
+ 
+video_capture = cv2.VideoCapture(video_path)
+
+#rect, img_ori = video_capture.read()
+#height, width, layer = img_ori.shape
+
+if (args.skip != None):
+    #skip 100 frame
+    for i in range(args.skip):
+        video_capture.read()
+
     
 #Display - light
 height = 100
 width = 60
 cv2.namedWindow('Light',2)
 
-#Input : video
-video_path = "C:/Users/hui/Desktop/FYP/FYP_input_video/day.avi"
-video_capture = cv2.VideoCapture(video_path)
-
-#rain : 1580
-#day : 380
 
 real_fps = video_capture.get(5)
 print ("fps : " + str(real_fps))
@@ -196,24 +227,22 @@ print ("fps : " + str(real_fps))
 #real_fps = 15
 
 #parameter
-fps = 5
+fps = 15
 processingtime_per_frame = round (1.0 / fps, 3)
 frame_skip = int(np.ceil(real_fps / fps) - 1)
 
-#skip 100 frame
-for i in range(380):
-    video_capture.read()
 
 # Detector
 hog = cv2.HOGDescriptor()
 hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
 
-#parameter    
+#Psuh button timer : parameter    
 missing_max = 5
 hold_max = 20
 crossing_time = 1
 waitkey_time = 1
+
 
 #initial state
 start_fc = 0
@@ -291,7 +320,7 @@ while (True):
     
     waitkey_time = int(round((processingtime_per_frame - total) * 1000))
     if (waitkey_time < 1):
-        #print ("slow")
+        print ("slow")
         waitkey_time = 1
     #print (waitkey_time)
     
